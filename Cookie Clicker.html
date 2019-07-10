@@ -1,0 +1,140 @@
+<html>
+<head>
+	<title>Jack's Coookie Clicker Game</title>
+	<link rel="stylesheet" href="css/normalize.css">
+	<link rel="stylesheet" href="css/skeleton.css">
+
+	<script
+		src="https://code.jquery.com/jquery-3.4.1.js"
+		integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+		crossorigin="anonymous"></script>
+
+	<script type="text/javascript">
+
+		window.onload = function(){
+			var score = 0;
+
+			var the_cookie = document.getElementById('the_cookie');
+			the_cookie.onclick = function(){
+				earn_cookies_by_clicking();
+			}
+
+
+			var value_of_clicking_a_cookie = 1;
+			function earn_cookies_by_clicking() {
+				change_the_score( value_of_clicking_a_cookie );
+			}
+
+
+			var cookies_per_second = 0;
+			var cookies_per_second_interval = setInterval(function(){
+				change_the_score( cookies_per_second );
+			}, 1000);
+
+			function change_the_score( amount ){
+				score = score + amount;
+				document.getElementById("score").innerHTML = score;
+
+				if( score >= 5 ){
+					create_powerup("Grandma", 50, function(){
+						cookies_per_second = cookies_per_second + 1;
+					})
+				}
+				if( score >= 100 ){
+					create_powerup("Farm", 150, function(){
+						cookies_per_second = cookies_per_second + 5;
+					})
+				}
+				if( score >= 10 ){
+					create_powerup("Clicker", 20, function( powerup ){
+						value_of_clicking_a_cookie = value_of_clicking_a_cookie + 1;
+						change_cost( powerup, Math.round(powerup.cost * 1.25) );
+					})
+				}
+			}
+				
+			var powerup_area = $('#powerups');
+			var powerups = {};
+			function create_powerup( name, cost, powerup_code, limit ){
+
+				// Check if already created this powerup. If we have, go away. If not, remember that we used it.
+				if( powerups.hasOwnProperty(name) ){
+					return;
+				}
+				powerups[name] = {
+					"name": name,
+					"cost": cost,
+					"code": powerup_code,
+					"limit": limit
+				}
+
+
+				var powerup_button = $('<button>');
+				powerup_button.text( name + ' (' + cost + ')' );
+				powerup_button.click(function(){
+					if( score < powerups[name].cost ){
+						return;
+					}
+					change_the_score( -powerups[name].cost );
+					powerup_code( powerups[name] );
+					increase_powerup_use( name );
+				});
+
+				powerup_count = $('<span>');
+				powerup_count.text( 0 );
+
+				var this_powerup_area = $('<div>');
+				this_powerup_area.append( powerup_button );
+				this_powerup_area.append( powerup_count );
+
+				powerup_area.append( this_powerup_area )
+
+				powerups[name].used = 0;
+				powerups[name].button = powerup_button;
+				powerups[name].count = powerup_count;
+
+			}
+
+			function increase_powerup_use( name ){
+				var powerup = powerups[name];
+				powerup.used = powerup.used + 1;
+				powerup.count.text( powerup.used )
+			}
+
+			function change_cost( powerup, value ){
+				powerup.cost = value;
+				powerup.button.text( powerup.name + ' (' + powerup.cost + ')' );
+			}
+
+			window.god_mode = function( new_score ){
+				score = new_score;
+			}
+
+		}
+			
+
+	</script>
+	<style>
+		div {
+			/* border: 1px solid red; */
+		}
+	</style>
+
+</head>
+<body>
+	<h1>Jack's Cookie Clicker Game</h1>
+
+	<div id="score_panel">
+		Score: <span id="score">Please wait for the game to load.</span>
+	</div>
+
+	<div id="play_area" class="row">
+		<div id="cookie" class="eight columns">
+			<img id="the_cookie" src="PerfectCookie.png" alt="Bigcookie">
+		</div>
+		<div id="powerups" class="four columns">
+		</div>
+	</div>
+
+</body>
+</html>
