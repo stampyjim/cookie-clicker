@@ -31,23 +31,47 @@
 				change_the_score( cookies_per_second );
 			}, 1000);
 
+			function change_the_cps( amount ) {
+				cookies_per_second = cookies_per_second + amount;
+				document.getElementById("cookies_per_second_display").innerHTML = cookies_per_second;
+			}
+
 			function change_the_score( amount ){
 				score = score + amount;
 				document.getElementById("score").innerHTML = score;
+			
+
 
 				if( score >= 5 ){
-					create_powerup("Grandma", 50, function(){
-						cookies_per_second = cookies_per_second + 1;
+					create_powerup("Grandma", 50, function( powerup ){
+						change_the_cps( 1 );
+						change_cost( powerup, Math.round(powerup.cost * 1.25) );
 					})
 				}
 				if( score >= 100 ){
 					create_powerup("Farm", 150, function(){
-						cookies_per_second = cookies_per_second + 5;
+						change_the_cps( 5 );
 					})
 				}
 				if( score >= 10 ){
-					create_powerup("Clicker", 20, function( powerup ){
+					create_powerup("Clicking power", 20, function( powerup ){
 						value_of_clicking_a_cookie = value_of_clicking_a_cookie + 1;
+						
+					})
+				}
+				if( score >= 500 ){
+					create_powerup("Mine", 2000, function( powerup ){
+						change_the_cps( 1 );
+						change_cost( powerup, Math.round(powerup.cost * 1.25) );
+					})
+				}if( score >= 10 ){
+					create_powerup("Shipment", 10000, function( powerup ){
+						change_the_cps( 1 );
+						change_cost( powerup, Math.round(powerup.cost * 1.25) );
+					})
+				}if( score >= 10 ){
+					create_powerup("Investor", 50000, function( powerup ){
+						change_the_cps( 1 );
 						change_cost( powerup, Math.round(powerup.cost * 1.25) );
 					})
 				}
@@ -116,7 +140,7 @@
 	</script>
 	<style>
 		div {
-			/* border: 1px solid red; */
+			 /* border: 1px solid red;  */
 		}
 	</style>
 
@@ -127,7 +151,9 @@
 	<div id="score_panel">
 		Score: <span id="score">Please wait for the game to load.</span>
 	</div>
-
+	<div>
+		Cookies per second: <span id="cookies_per_second_display"></span>
+	</div>
 	<div id="play_area" class="row">
 		<div id="cookie" class="eight columns">
 			<img id="the_cookie" src="PerfectCookie.png" alt="Bigcookie">
